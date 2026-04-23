@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Menambah class 'aktif' akan memicu animasi X di CSS dan menampilkan menu
             burgerBtn.classList.toggle('aktif');
             menuDropdown.classList.toggle('aktif');
+            document.body.classList.toggle('menu-open');
         });
     }
 
@@ -50,9 +51,49 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('click', () => {
                 burgerBtn.classList.remove('aktif');
                 menuDropdown.classList.remove('aktif');
+                document.body.classList.remove('menu-open');
             });
         });
     }
+
+    // --- SMOOTH SCROLL NAVIGATION DENGAN OFFSET ---
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            // Skip jika hanya '#' atau '#' kosong
+            if (href === '#' || href === '') return;
+
+            const targetId = href.slice(1);
+            const targetElement = document.getElementById(targetId);
+
+            if (targetElement) {
+                e.preventDefault();
+                
+                // Offset untuk navbar fixed (110px padding-top dari .isi-halaman)
+                let targetPosition = targetElement.getBoundingClientRect().top + window.scrollY;
+                
+                if (targetId === 'beranda') {
+                    // Jika ke beranda, scroll ke paling atas (0)
+                    targetPosition = 0;
+                } else {
+                    const navbarHeight = 110;
+                    targetPosition -= navbarHeight;
+                }
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+
+                // Tutup mobile menu jika terbuka
+                if (burgerBtn && menuDropdown) {
+                    burgerBtn.classList.remove('aktif');
+                    menuDropdown.classList.remove('aktif');
+                    document.body.classList.remove('menu-open');
+                }
+            }
+        });
+    });
 
     // --- LOGIKA AKORDION FAQ ---
     const faqHeaders = document.querySelectorAll('.faq-header');
